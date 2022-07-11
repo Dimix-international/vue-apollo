@@ -1,26 +1,35 @@
 <template>
-  <img alt="Vue logo" src="./assets/logo.png">
-  <HelloWorld msg="Welcome to Your Vue.js App"/>
+  <div v-if="loading">Loading..</div>
+  <ul v-else>
+    <li
+        v-for="character in characters"
+        :key="character.id"
+    >
+      {{character.name}}
+    </li>
+  </ul>
 </template>
 
 <script>
-import HelloWorld from './components/HelloWorld.vue'
+
+import {useQuery} from '@vue/apollo-composable';
+import allCharacters from './graphql/allCharacters.query.gql';
+import {computed} from "vue";
 
 export default {
   name: 'App',
-  components: {
-    HelloWorld
-  }
+  setup() {
+    const {result, loading} = useQuery(allCharacters); //сразу станет ref
+    const characters = computed(() => result.value?.characters.results ?? []);
+
+    return {
+      characters,
+      loading,
+    }
+  },
 }
 </script>
 
 <style>
-#app {
-  font-family: Avenir, Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
-  margin-top: 60px;
-}
+
 </style>
